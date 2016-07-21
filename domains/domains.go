@@ -2,8 +2,15 @@ package domains
 
 import (
 	"encoding/xml"
-//	"time"
+	"time"
 )
+
+type Sitemap_from_db struct {
+	Stitle string
+	Site string
+	Updated time.Time
+		
+}
 
 type ServerConfig struct {
 
@@ -20,6 +27,11 @@ type ServerConfig struct {
 	Sites struct {
 		Site []string
 	}
+	Dirs struct {
+		
+		Sitemapsdir string
+		
+	}
 	
 	Files struct {
 		
@@ -30,16 +42,8 @@ type ServerConfig struct {
 
 
 type JobOffer struct {
-//	Id           string
-//	Company      string
 	Title        string
-//	Location     string
 	Tags         []string
-//	Externallink string
-//	Email        string
-//	Hits         int
-//	Created_at   time.Time
-//	Applied      bool
 	Description  string
 }
 

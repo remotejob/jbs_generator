@@ -1,7 +1,7 @@
 package dbhandler
 
 import (
-//	"fmt"
+	//	"fmt"
 	"github.com/remotejob/jbs_generator/domains"
 	"github.com/remotejob/jbs_generator/entryHandler"
 	"gopkg.in/mgo.v2"
@@ -10,7 +10,20 @@ import (
 	//	"time"
 )
 
+func GetAllSitemaplinks(session mgo.Session) []domains.Sitemap_from_db {
 
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("jbs_generator").C("jbs_generator")
+	var results []domains.Sitemap_from_db
+	err := c.Find(nil).Select(bson.M{"stitle": 1, "site": 1, "updated": 1}).All(&results)
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	return results
+}
 
 func GetAllUseful(session mgo.Session) []domains.JobOffer {
 

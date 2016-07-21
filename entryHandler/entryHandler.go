@@ -19,6 +19,7 @@ type Article struct {
 	Tags      string
 	Contents  string
 	Mcontents string
+	Site      string
 	Created   time.Time
 	Updated   time.Time
 }
@@ -31,7 +32,9 @@ func NewEntryarticle() *Entryarticle {
 	return &Entryarticle{Article{}}
 }
 
-func (article *Entryarticle) AddTitleStitleMcontents(bfile []byte) {
+func (article *Entryarticle) AddTitleStitleMcontents(bfile []byte, sites []string, uniqlinks map[string]struct{}) string {
+
+	siteid := gen.Random(0, len(sites))
 
 	mtext := mgenerator.Generate(bfile)
 
@@ -48,9 +51,19 @@ func (article *Entryarticle) AddTitleStitleMcontents(bfile []byte) {
 
 	}
 
+	stitle := slug.Make(title)
 	article.Modarticle.Title = str.UpcaseInitial(title)
 	article.Modarticle.Stitle = slug.Make(title)
 	article.Modarticle.Mcontents = mtext
+	article.Modarticle.Site = sites[siteid]
+
+	//	if _, ok := uniqlinks[stitle]; !ok {
+	//
+	//		retbool	= true
+	//
+	//	}
+
+	return stitle
 
 }
 
@@ -58,7 +71,7 @@ func (article *Entryarticle) AddTags(tags []string) {
 
 	var tagsquant = len(tags)
 	var tags_str string = ""
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 
 		tagint := gen.Random(0, tagsquant)
 		tags_str = tags_str + " " + tags[tagint]
@@ -85,8 +98,8 @@ func (article *Entryarticle) AddContents(sentenses []string) {
 
 func (article *Entryarticle) InsertIntoDB(session mgo.Session) {
 
-	now :=time.Now()
-	articletodb := Article{article.Modarticle.Title, article.Modarticle.Stitle, article.Modarticle.Tags, article.Modarticle.Contents, article.Modarticle.Mcontents,now,now}
+	now := time.Now()
+	articletodb := Article{article.Modarticle.Title, article.Modarticle.Stitle, article.Modarticle.Tags, article.Modarticle.Contents, article.Modarticle.Mcontents, article.Modarticle.Site, now, now}
 	//	dbhandler.InsetArticle(session, articletodb)
 	session.SetMode(mgo.Monotonic, true)
 

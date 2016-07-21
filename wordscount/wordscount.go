@@ -40,17 +40,10 @@ func GetBestKeywords(bfile []byte, commonwords_file string,quant int) []string {
 		if err == io.EOF {
 			break
 		}
-		// Display record.
-		// ... Display record length.
-		// ... Display all individual elements of the slice.
-		//	fmt.Println(record[0])
+
 
 		set_commonwords[record[0]] = struct{}{}
 
-		//	fmt.Println(len(record))
-		//	for value := range record {
-		//	    fmt.Printf("  %v\n", record[value])
-		//	}
 	}
 
 //	f, _ := os.Open("/tmp/book.txt")
