@@ -3,6 +3,7 @@ package home_page
 import (
 	"fmt"
 	"github.com/remotejob/jbs_generator/domains"
+	"github.com/cf-guardian/guardian/kernel/fileutils"	
 	"github.com/shogo82148/go-shuffle"
 	"html/template"
 	"math/rand"
@@ -25,6 +26,16 @@ func Create(allarticles []domains.Articlefull, pwd string, site string) {
 	fmt.Println(filestr)
 
 	os.MkdirAll(dirstr, 0777)
+	
+	src_assetsdir := path.Join(pwd,"assets")
+	dst_assetsdir := path.Join(dirstr,"assets")
+	
+	futl := fileutils.New()	
+	
+	futl.Copy(dst_assetsdir, src_assetsdir)
+	
+//	check(err)
+	
 
 	var numberstoshuffle []int
 	for num, _ := range allarticles {

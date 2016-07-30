@@ -90,6 +90,9 @@ func main() {
 	
 	for _,site :=range sites {
 		
+		
+		
+		
 		home_page.Create(allarticles, pwd, site)
 		
 	}
