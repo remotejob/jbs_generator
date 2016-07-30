@@ -78,9 +78,10 @@ func main() {
 	}
 	defer dbsession.Close()
 
+	lphead := path.Join("templates", "header.html")	
 	lp := path.Join("templates", "layout.html")
 
-	t, err := template.ParseFiles(lp)
+	t, err := template.ParseFiles(lp,lphead)
 	check(err)
 
 	fmt.Println("pwd", pwd)

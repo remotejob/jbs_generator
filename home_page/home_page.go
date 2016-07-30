@@ -28,7 +28,10 @@ func Create(allarticles []domains.Articlefull, pwd string, site string) {
 	os.MkdirAll(dirstr, 0777)
 	
 	src_assetsdir := path.Join(pwd,"assets")
-	dst_assetsdir := path.Join(dirstr,"assets")
+	dst_assetsdir := path.Join(dirstr)
+	
+	os.RemoveAll(path.Join(dst_assetsdir,"assets"))
+	
 	
 	futl := fileutils.New()	
 	
@@ -64,9 +67,10 @@ func Create(allarticles []domains.Articlefull, pwd string, site string) {
 
 	}
 
+	lphead := path.Join("templates", "header_home.html")
 	lp := path.Join("templates", "home_page.html")
 
-	t, err := template.ParseFiles(lp)
+	t, err := template.ParseFiles(lp,lphead)
 	check(err)
 
 	f, err := os.Create(filestr)
@@ -76,7 +80,8 @@ func Create(allarticles []domains.Articlefull, pwd string, site string) {
 		return
 	}
 
-	err = t.Execute(f, articles_to_inject)
+//	err = t.Execute(f, articles_to_inject)
+	err = t.Execute(f,articles_to_inject)	
 	check(err)
 
 }
