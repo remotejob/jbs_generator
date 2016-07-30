@@ -26,6 +26,13 @@ var database string
 var username string
 var password string
 var mechanism string
+
+var addrsext []string
+var databaseext string
+var usernameext string
+var passwordext string
+var mechanismext string
+
 var sites []string
 var commonwords string
 
@@ -42,6 +49,12 @@ func init() {
 		username = cfg.Dbmgo.Username
 		password = cfg.Dbmgo.Password
 		mechanism = cfg.Dbmgo.Mechanism
+
+		addrsext = cfg.Dbmgoext.Addrs
+		databaseext = cfg.Dbmgoext.Database
+		usernameext = cfg.Dbmgoext.Username
+		passwordext = cfg.Dbmgoext.Password
+		mechanismext = cfg.Dbmgoext.Mechanism
 
 		sites = cfg.Sites.Site
 		commonwords = cfg.Files.Commonwords
@@ -68,7 +81,23 @@ func main() {
 	}
 	defer dbsession.Close()
 
-	bookgen.Create(*dbsession, "/tmp/book.txt")
+	mongoDBDialInfoext := &mgo.DialInfo{
+		Addrs:     addrsext,
+		Timeout:   60 * time.Second,
+		Database:  databaseext,
+		Username:  usernameext,
+		Password:  passwordext,
+		Mechanism: mechanism,
+	}
+
+	dbsessionext, err := mgo.DialWithInfo(mongoDBDialInfoext)
+
+	if err != nil {
+		panic(err)
+	}
+	defer dbsessionext.Close()
+
+	bookgen.Create(*dbsessionext, "/tmp/book.txt")
 
 	buf := bytes.NewBuffer(nil)
 
@@ -83,12 +112,11 @@ func main() {
 
 	for _, sitemaplink := range allsitemaplinks {
 
-		fmt.Println(sitemaplink.Stitle)
+//		fmt.Println(sitemaplink.Stitle)
 		uniq_links[sitemaplink.Stitle] = struct{}{}
 
 	}
-	
-	
+
 	bestKeywords := wordscount.GetBestKeywords(buf.Bytes(), commonwords, 500)
 	//	wordscount.GetBestKeywords(buf.Bytes(), "/home/juno/neonworkspace/jbs_generator/commonwords.csv")
 
@@ -102,8 +130,8 @@ func main() {
 
 	if _, ok := uniq_links[stitle]; !ok {
 
-		uniq_links[stitle] = struct{}{}	
-	
+		uniq_links[stitle] = struct{}{}
+
 		newArticle.AddTags(bestKeywords)
 		newArticle.AddContents(sentences)
 		newArticle.InsertIntoDB(*dbsession)
@@ -114,7 +142,7 @@ func main() {
 		//	fmt.Println(newArticle.Modarticle.Contents)
 
 	} else {
-		fmt.Println("Creates stitle EXIST!! but it possible",stitle)
+		fmt.Println("Creates stitle EXIST!! but it possible", stitle)
 	}
 
 }

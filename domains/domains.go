@@ -2,49 +2,72 @@ package domains
 
 import (
 	"encoding/xml"
+	"gopkg.in/mgo.v2/bson"
 	"time"
 )
 
+type Articlefull struct {
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	Title     string
+	Stitle    string
+	Tags      string
+	Contents  string
+	Mcontents string
+	Site      string
+	Created   time.Time
+	Updated   time.Time
+}
+
+type Article struct {
+	Title     string
+	Tags      string
+	Contents  string
+	Mcontents string
+}
+
 type Sitemap_from_db struct {
-	Stitle string
-	Site string
+	Stitle  string
+	Site    string
 	Updated time.Time
-		
 }
 
 type ServerConfig struct {
-
 	Dbmgo struct {
-		
-		Addrs []string
-		Database string
-		Username string
-	    Password string		
-		Mechanism string		
-		
+		Addrs     []string
+		Database  string
+		Username  string
+		Password  string
+		Mechanism string
 	}
-	
+
+	Dbmgoext struct {
+		Addrs     []string
+		Database  string
+		Username  string
+		Password  string
+		Mechanism string
+	}
 	Sites struct {
 		Site []string
 	}
 	Dirs struct {
-		
 		Sitemapsdir string
-		
+		Webrootdir  string
 	}
-	
+
+	Routes struct {
+		Mainroute string
+	}
+
 	Files struct {
-		
 		Commonwords string
 	}
 }
 
-
-
 type JobOffer struct {
-	Title        string
-	Tags         []string
-	Description  string
+	Title       string
+	Tags        []string
+	Description string
 }
 
 //type BlogIndex struct {
@@ -73,8 +96,6 @@ type SitemapObj struct {
 	Loc           string
 	Lastmod       string
 }
-
-
 
 //type BlogItem struct {
 //	Stopic     string

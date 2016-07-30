@@ -7,6 +7,7 @@ import (
 	"github.com/remotejob/jbs_generator/mgenerator"
 	//	"github.com/remotejob/jbs_generator/dbhandler/Aprinter"
 	"gopkg.in/mgo.v2"
+	"math/rand"	
 	//	"github.com/remotejob/jbs_generator/wordscount"
 	"log"
 	"strings"
@@ -34,6 +35,7 @@ func NewEntryarticle() *Entryarticle {
 
 func (article *Entryarticle) AddTitleStitleMcontents(bfile []byte, sites []string, uniqlinks map[string]struct{}) string {
 
+	rand.Seed(time.Now().UTC().UnixNano())
 	siteid := gen.Random(0, len(sites))
 
 	mtext := mgenerator.Generate(bfile)

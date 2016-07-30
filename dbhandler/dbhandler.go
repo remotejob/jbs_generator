@@ -10,6 +10,41 @@ import (
 	//	"time"
 )
 
+func GetAllForStatic(session mgo.Session) []domains.Articlefull {
+
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("jbs_generator").C("jbs_generator")
+	var results []domains.Articlefull
+	err := c.Find(nil).All(&results)
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	return results
+
+}
+
+func GetOneArticle(session mgo.Session, stitle string) domains.Article {
+
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("jbs_generator").C("jbs_generator")
+
+	var result domains.Article
+
+	err := c.Find(bson.M{"stitle": stitle}).Select(bson.M{"created": 0, "updated": 0, "stitle": 0, "site": 0}).One(&result)
+	if err != nil {
+
+		//		log.Fatal(err)
+		//		return
+	}
+
+	return result
+
+}
+
 func GetAllSitemaplinks(session mgo.Session) []domains.Sitemap_from_db {
 
 	session.SetMode(mgo.Monotonic, true)
