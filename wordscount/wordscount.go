@@ -39,7 +39,6 @@ func GetBestKeywords(bfile []byte, commonwords_file string,quant int) []string {
 			break
 		}
 
-
 		set_commonwords[record[0]] = struct{}{}
 
 	}

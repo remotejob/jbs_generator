@@ -1,18 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/kazarena/json-gold/ld"
 	"github.com/remotejob/jbs_generator/dbhandler"
 	"github.com/remotejob/jbs_generator/domains"
-	"github.com/remotejob/jbs_generator/home_page"	
+	"github.com/remotejob/jbs_generator/home_page"
+	"github.com/remotejob/jbs_generator/static_site_gen/create_json_ld"
 	"gopkg.in/gcfg.v1"
 	"gopkg.in/mgo.v2"
 	"html/template"
 	"log"
 	"os"
 	"path"
+	//	"strings"
 	"time"
-	"encoding/json"	
 )
 
 var addrs []string
@@ -78,37 +81,56 @@ func main() {
 	}
 	defer dbsession.Close()
 
-	lphead := path.Join("templates", "header.html")	
+	lphead := path.Join("templates", "header.html")
 	lp := path.Join("templates", "layout.html")
 
-	t, err := template.ParseFiles(lp,lphead)
+	funcMap := template.FuncMap{
+		"marshal": func(a []byte) template.JS {
+
+			return template.JS(a)
+		},
+	}
+
+	t, err := template.New("layout.html").Funcs(funcMap).ParseFiles(lp, lphead)
 	check(err)
 
-	fmt.Println("pwd", pwd)
-
 	allarticles := dbhandler.GetAllForStatic(*dbsession)
-	
-	
-	for _,site :=range sites {
-		
-		
-		
-		
+
+	for _, site := range sites {
+
 		home_page.Create(allarticles, pwd, site)
-		
+
 	}
-	
+
+	proc := ld.NewJsonLdProcessor()
+	options := ld.NewJsonLdOptions("")
+
 	for _, articlefull := range allarticles {
 
-		
-		articleobj := domains.Article{articlefull.Title,articlefull.Tags,articlefull.Contents,articlefull.Mcontents}
-		
-		articlejson, _ := json.Marshal(articleobj)		
+		articleobj := domains.Article{articlefull.Title, articlefull.Tags, articlefull.Contents, articlefull.Mcontents,articlefull.Author}
 
+		createdstr := articlefull.Created.Format("2006-01-02")
+		updatedstr := articlefull.Updated.Format("2006-01-02")
+
+		jsonld := create_json_ld.Create(proc, options, articlefull)
+
+		articletotemplate := domains.Articletotempalte{
+			Title:     articlefull.Title,
+			Stitle:    articlefull.Stitle,
+			Tags:      articlefull.Tags,
+			Contents:  articlefull.Contents,
+			Mcontents: articlefull.Mcontents,
+			Site:      articlefull.Site,
+			Created:   createdstr,
+			Updated:   updatedstr,
+			Jsonld:    jsonld,
+		}
+
+		articlejson, _ := json.Marshal(articleobj)
 
 		dirstr := path.Join(pwd, "www", articlefull.Site, mainroute)
 		filestr := path.Join(pwd, "www", articlefull.Site, mainroute, articlefull.Stitle+".html")
-		filestrjson := path.Join(pwd, "www", articlefull.Site, mainroute, articlefull.Stitle+".json")		
+		filestrjson := path.Join(pwd, "www", articlefull.Site, mainroute, articlefull.Stitle+".json")
 		os.MkdirAll(dirstr, 0777)
 
 		f, err := os.Create(filestr)
@@ -117,25 +139,21 @@ func main() {
 			check(err)
 			return
 		}
-		err = t.Execute(f, articlefull)
+
+		err = t.Execute(f, articletotemplate)
 		check(err)
 
 		fmt.Println(filestr)
-		
-		 jsonFile, err := os.Create(filestrjson)
 
-         if err != nil {
-                 fmt.Println(err)
-         }
-         defer jsonFile.Close()
-		 jsonFile.Write(articlejson)
-         jsonFile.Close()
-		
-		
+		jsonFile, err := os.Create(filestrjson)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer jsonFile.Close()
+		jsonFile.Write(articlejson)
+		jsonFile.Close()
 
 	}
-
-	//	err = t.Execute(f, domains.Article)
-	//	check(err)
 
 }

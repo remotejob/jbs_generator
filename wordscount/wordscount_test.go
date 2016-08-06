@@ -96,11 +96,11 @@ func TestSingleWordCount(t *testing.T) {
 	}
 
 	sort.Sort(sort.Reverse(sort.IntSlice(a)))
-	for _, k := range a {
-		for _, s := range n[k] {
-			fmt.Printf("%s, %d\n", s, k)
-		}
-	}
+//	for _, k := range a {
+//		for _, s := range n[k] {
+//			fmt.Printf("%s, %d\n", s, k)
+//		}
+//	}
 
 	fmt.Println("count", len(word_counts))
 

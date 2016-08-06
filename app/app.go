@@ -11,6 +11,7 @@ import (
 	"github.com/remotejob/jbs_generator/entryHandler"
 	"github.com/remotejob/jbs_generator/sentenses_tokenizer"
 	"github.com/remotejob/jbs_generator/wordscount"
+//	"github.com/remotejob/jbs_generator/savetags"
 
 	"gopkg.in/gcfg.v1"
 	"gopkg.in/mgo.v2"
@@ -111,14 +112,11 @@ func main() {
 	uniq_links := make(map[string]struct{})
 
 	for _, sitemaplink := range allsitemaplinks {
-
-//		fmt.Println(sitemaplink.Stitle)
 		uniq_links[sitemaplink.Stitle] = struct{}{}
 
 	}
 
 	bestKeywords := wordscount.GetBestKeywords(buf.Bytes(), commonwords, 500)
-	//	wordscount.GetBestKeywords(buf.Bytes(), "/home/juno/neonworkspace/jbs_generator/commonwords.csv")
 
 	sentenses_quant := gen.Random(5, 10)
 
@@ -134,6 +132,7 @@ func main() {
 
 		newArticle.AddTags(bestKeywords)
 		newArticle.AddContents(sentences)
+		newArticle.AddAuthor()
 		newArticle.InsertIntoDB(*dbsession)
 
 		//	fmt.Println(newArticle.Modarticle.Title)

@@ -14,8 +14,21 @@ type Articlefull struct {
 	Contents  string
 	Mcontents string
 	Site      string
+	Author    string
 	Created   time.Time
 	Updated   time.Time
+}
+
+type Articletotempalte struct {
+	Title     string
+	Stitle    string
+	Tags      string
+	Contents  string
+	Mcontents string
+	Site      string
+	Created   string
+	Updated   string
+	Jsonld    []byte
 }
 
 type Article struct {
@@ -23,6 +36,7 @@ type Article struct {
 	Tags      string
 	Contents  string
 	Mcontents string
+	Author string
 }
 
 type Sitemap_from_db struct {
